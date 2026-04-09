@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduBot - Sign Up & Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+
+        .form-container {
+            padding: 40px;
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            display: none;
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #c62828;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        .success-message {
+            display: none;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .spinner {
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .requirement {
+            margin: 5px 0;
+        }
+
+        .requirement.valid {
+            color: #2e7d32;
+        }
+
+        .requirement.invalid {
+            color: #c62828;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 12px;
+            background: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="header">
+                <div class="logo">📚</div>
+                <h1>EduBot</h1>
+                <p>Your AI Education Assistant</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('login')">Login</button>
+                <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div id="login-form" class="form-container active">
+                <div class="error-message" id="loginErrorMessage"></div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            name="password" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="loginBtn">
+                        Access EduBot
+                    </button>
+                </form>
+
+                <div class="loading" id="loginLoading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Logging in...</p>
+                </div>
+
+                <div class="info-text">
+                    Don't have an account? Click on "Sign Up" tab above
+                </div>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signup-form" class="form-container">
+                <div class="error-message" id="signupErrorMessage"></div>
+                <div class="success-message" id="signupSuccessMessage"></div>
+
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="signupEmail" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Create Password</label>
+                        <input 
+                            type="password" 
+                            id="signupPassword" 
+                            name="password" 
+                            placeholder="At least 6 characters"
+                            required
+                            autocomplete="new-password"
+                            oninput="checkPasswordStrength()"
+                        >
+                        <div class="password-requirements" id="passwordRequirements">
+                            <div class="requirement invalid" id="req-length">✓ At least 6 characters</div>
+                            <div class="requirement invalid" id="req-char">✓ Contains letters & numbers</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPasswordConfirm">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="signupPasswordConfirm" 
+                            name="confirmPassword" 
+                            placeholder="Re-enter your password"
+                            required
+                            autocomplete="new-password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="signupBtn">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="loading" id="signupLoading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Creating account...</p>
+                </div>
+
+                <div class="info-text">
+                    Your email will be saved securely
+                </div>
+            </div>
+
+            <div class="footer">
+                Test Account: test@example.com | Password: test123
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======= CONFIGURATION =======
+        // Replace with your actual Chat URL from n8n
+        const EDUBOT_CHAT_URL = 'https://vandanaaass.app.n8n.cloud/webhook/b137e2c1-73a5-4278-93a4-5d948420f724/chat';
+        
+        // Replace with your Google Apps Script Web App URL
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGJspcIZ8MVH3O5IPV8uMZoNDZKpSbYZHuX23CMYh2ieu6z_4uzYZz0LmXFLKLYoak/exec';
+        // ======= END CONFIGURATION =======
+
+        // Local storage to store registered users
+        const STORAGE_KEY = 'edubot_users';
+
+        // Initialize storage
+        function initializeStorage() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                const defaultUsers = {
+                    'test@example.com': 'test123'
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUsers));
+            }
+        }
+
+        initializeStorage();
+
+        // Switch between login and signup tabs
+        function switchTab(tab) {
+            // Hide all forms
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('signup-form').classList.remove('active');
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected form and button
+            document.getElementById(tab + '-form').classList.add('active');
+            event.target.classList.add('active');
+
+            // Clear messages
+            document.getElementById('loginErrorMessage').classList.remove('show');
+            document.getElementById('signupErrorMessage').classList.remove('show');
+            document.getElementById('signupSuccessMessage').classList.remove('show');
+        }
+
+        // Check password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const reqLength = document.getElementById('req-length');
+            const reqChar = document.getElementById('req-char');
+
+            // Check length
+            if (password.length >= 6) {
+                reqLength.classList.remove('invalid');
+                reqLength.classList.add('valid');
+            } else {
+                reqLength.classList.remove('valid');
+                reqLength.classList.add('invalid');
+            }
+
+            // Check for letters and numbers
+            const hasLetters = /[a-zA-Z]/.test(password);
+            const hasNumbers = /[0-9]/.test(password);
+
+            if (hasLetters && hasNumbers) {
+                reqChar.classList.remove('invalid');
+                reqChar.classList.add('valid');
+            } else {
+                reqChar.classList.remove('valid');
+                reqChar.classList.add('invalid');
+            }
+        }
+
+        // SIGNUP HANDLER
+        function handleSignup(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+            const errorMsg = document.getElementById('signupErrorMessage');
+            const successMsg = document.getElementById('signupSuccessMessage');
+            const signupBtn = document.getElementById('signupBtn');
+            const signupLoading = document.getElementById('signupLoading');
+
+            // Clear messages
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+
+            // Validate email
+            if (!isValidEmail(email)) {
+                errorMsg.textContent = '❌ Please enter a valid email address';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Check if email already exists
+            const users = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (users[email]) {
+                errorMsg.textContent = '❌ Email already registered. Please login or use a different email.';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Validate password
+            if (password.length < 6) {
+                errorMsg.textContent = '❌ Password must be at least 6 characters';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+                errorMsg.textContent = '❌ Password must contain both letters and numbers';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Check password match
+            if (password !== confirmPassword) {
+                errorMsg.textContent = '❌ Passwords do not match';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Show loading
+            signupLoading.style.display = 'block';
+            signupBtn.disabled = true;
+
+            // Save to Google Sheet
+            setTimeout(() => {
+                saveUserToSheet(email, password, () => {
+                    // Save to local storage
+                    users[email] = password;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+
+                    // Show success message
+                    signupLoading.style.display = 'none';
+                    signupBtn.disabled = false;
+                    successMsg.textContent = '✅ Account created successfully! Redirecting...';
+                    successMsg.classList.add('show');
+
+                    // Clear form
+                    document.getElementById('signupEmail').value = '';
+                    document.getElementById('signupPassword').value = '';
+                    document.getElementById('signupPasswordConfirm').value = '';
+
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        redirectToChat(email);
+                    }, 2000);
+                });
+            }, 1000);
+        }
+
+        // LOGIN HANDLER
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const errorMsg = document.getElementById('loginErrorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginLoading = document.getElementById('loginLoading');
+
+            // Clear messages
+            errorMsg.classList.remove('show');
+
+            // Validate email
+            if (!isValidEmail(email)) {
+                errorMsg.textContent = '❌ Please enter a valid email address';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Show loading
+            loginLoading.style.display = 'block';
+            loginBtn.disabled = true;
+
+            // Check credentials
+            setTimeout(() => {
+                const users = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+                if (users[email] && users[email] === password) {
+                    // Valid login - redirect to chat
+                    redirectToChat(email);
+                } else {
+                    // Invalid credentials
+                    loginLoading.style.display = 'none';
+                    loginBtn.disabled = false;
+                    errorMsg.textContent = '❌ Invalid email or password';
+                    errorMsg.classList.add('show');
+                    document.getElementById('loginPassword').value = '';
+                    document.getElementById('loginPassword').focus();
+                }
+            }, 800);
+        }
+
+        // Save user to Google Sheet
+        function saveUserToSheet(email, password, callback) {
+            fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: new URLSearchParams({
+                    email: email,
+                    password: password,
+                    action: 'signup',
+                    timestamp: new Date().toLocaleString()
+                })
+            })
+            .then(() => {
+                callback();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                callback(); // Continue even if sheet save fails
+            });
+        }
+
+        // Save login event to Google Sheet
+        function logLoginToSheet(email) {
+            fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: new URLSearchParams({
+                    email: email,
+                    action: 'login',
+                    timestamp: new Date().toLocaleString()
+                })
+            })
+            .catch((error) => {
+                console.error('Logging error:', error);
+            });
+        }
+
+        // Redirect to chat
+        function redirectToChat(email) {
+            logLoginToSheet(email); // Log the login event
+            const timestamp = new Date().getTime();
+            window.location.href = EDUBOT_CHAT_URL + '?t=' + timestamp;
+        }
+
+        // Email validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Focus on first input on load
+        window.addEventListener('load', () => {
+            document.getElementById('loginEmail').focus();
+        });
+
+        // Allow Enter to submit forms
+        document.getElementById('loginPassword').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                document.querySelector('#login-form form').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        document.getElementById('signupPasswordConfirm').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                document.querySelector('#signup-form form').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
