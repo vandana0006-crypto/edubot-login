@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: edubot-login
+    runtime: static
+    buildCommand: ""
+    startCommand: ""
+    staticPublishPath: .
+    envVars: []
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
